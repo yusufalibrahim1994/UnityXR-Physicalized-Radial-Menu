@@ -1,5 +1,6 @@
 # SteamVR-Test-Two
-Testing VR radial menu and gravity gloves
+(Testing VR radial menu and gravity gloves)
+
 First configure the input bindings by going to Window → SteamVR Input → Open  binding UI
 
 TO TEST GRAVITY GLOVES
