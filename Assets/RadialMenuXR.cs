@@ -10,7 +10,7 @@ public class RadialMenuXR : MonoBehaviour
 {
     [Header("RADIAL MENU")]
 
-    [SerializeField] private GameObject[] menuItems;
+    [SerializeField] private GameObject[] menuPlaceholderItems;
     [SerializeField] private GameObject[] correspondingXRinteractables;
 
     [SerializeField] private float menuRadius = 1.5f;
@@ -29,6 +29,8 @@ public class RadialMenuXR : MonoBehaviour
     [SerializeField] private InputActionAsset actionAsset;
     [SerializeField] private GameObject particles;
     [SerializeField] private AudioClip hoverClip;
+    [SerializeField] private AudioClip selectClip;
+
     private bool allowSelection = false;
     private GameObject selectionGO;
     private Transform selectionTransform;
@@ -83,30 +85,30 @@ public class RadialMenuXR : MonoBehaviour
         InstantiateCircle();
         optionContainer.SetActive(false);
 
-        for(int i = 0; i < menuItems.Length; i++)
+        for(int i = 0; i < menuPlaceholderItems.Length; i++)
         {
-            initialMenuItemsTransform[i] = new Vector3 (menuItems[i].transform.localScale.x, menuItems[i].transform.localScale.y, menuItems[i].transform.localScale.z);
+            initialMenuItemsTransform[i] = new Vector3 (menuPlaceholderItems[i].transform.localScale.x, menuPlaceholderItems[i].transform.localScale.y, menuPlaceholderItems[i].transform.localScale.z);
         }
     }
 
 
     private void Update()
     {
-        for(int i = 0; i < menuItems.Length; i++)
+        for(int i = 0; i < menuPlaceholderItems.Length; i++)
         {
-            if(menuItems[i].activeInHierarchy)
+            if(menuPlaceholderItems[i].activeInHierarchy)
             {
-                float HandToObjectDistance = Vector3.Distance(targetParent.transform.position, menuItems[i].transform.position);
+                float HandToObjectDistance = Vector3.Distance(targetParent.transform.position, menuPlaceholderItems[i].transform.position);
 
                 float inverseDistanceBetweenTransforms = 1/ HandToObjectDistance;
-                menuItems[i].transform.localScale = new Vector3(initialMenuItemsTransform[i].x * inverseDistanceBetweenTransforms * inverseScale, initialMenuItemsTransform[i].y * inverseDistanceBetweenTransforms * inverseScale, initialMenuItemsTransform[i].z * inverseDistanceBetweenTransforms * inverseScale);
+                menuPlaceholderItems[i].transform.localScale = new Vector3(initialMenuItemsTransform[i].x * inverseDistanceBetweenTransforms * inverseScale, initialMenuItemsTransform[i].y * inverseDistanceBetweenTransforms * inverseScale, initialMenuItemsTransform[i].z * inverseDistanceBetweenTransforms * inverseScale);
 
                 if (HandToObjectDistance < outlineGrabThresholdDistance)
                 {
-                    Haptic(menuItems[i].GetComponent<Outline>().enabled);
-                    menuItems[i].GetComponent<Outline>().enabled = true;
+                    Haptic(menuPlaceholderItems[i].GetComponent<Outline>().enabled);
+                    menuPlaceholderItems[i].GetComponent<Outline>().enabled = true;
 
-                    allowSelection = menuItems[i].GetComponent<Outline>().enabled;
+                    allowSelection = menuPlaceholderItems[i].GetComponent<Outline>().enabled;
                     selectionGO = ReturnGameobject(correspondingXRinteractables[i]);
                     //SelectMenuItem(correspondingXRinteractables[i].gameObject, menuItems[i].transform);
 
@@ -115,7 +117,7 @@ public class RadialMenuXR : MonoBehaviour
                 else
                 {
                     correspondingXRinteractables[i].SetActive(false);
-                    menuItems[i].GetComponent<Outline>().enabled = false;
+                    menuPlaceholderItems[i].GetComponent<Outline>().enabled = false;
 
 
                 }
@@ -135,15 +137,15 @@ public class RadialMenuXR : MonoBehaviour
 
     private void InstantiateCircle()
     {
-        float angle = 360f / (float)menuItems.Length;
-        for (int i = 0; i < menuItems.Length; i++)
+        float angle = 360f / (float)menuPlaceholderItems.Length;
+        for (int i = 0; i < menuPlaceholderItems.Length; i++)
         {
             Quaternion rotation = Quaternion.AngleAxis(i * angle, Vector3.up);
             Vector3 direction = rotation * Vector3.forward;
 
             Vector3 position = targetParent.position + (direction * menuRadius);
-            menuItems[i].transform.localPosition = position;
-            menuItems[i].transform.localRotation = rotation;
+            menuPlaceholderItems[i].transform.localPosition = position;
+            menuPlaceholderItems[i].transform.localRotation = rotation;
 
         }
     }
@@ -156,6 +158,7 @@ public class RadialMenuXR : MonoBehaviour
             interactionManager.ForceSelect(directInteractor, selectionGO.GetComponent<XRGrabInteractable>());
             particles.transform.position = directInteractor.transform.position;
             particles.SetActive(true);
+            AudioSource.PlayClipAtPoint(selectClip, transform.position);
             allowSelection = false;
             selectionGO = null;
         }
