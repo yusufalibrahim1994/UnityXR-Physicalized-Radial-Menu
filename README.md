@@ -1,8 +1,5 @@
-# OpenXR_XRI_Sample
-Set of samples showing off new features for the XR Interaction Toolkit.
+# UnityXR Physical Radial Menu
 
-Currently this project is setup with:
-- Unity 2021.3.19f1
-- OpenXR 1.6.0
-- Unity Hands 1.1.0-pre.3
-- XR Interaction Toolkit 2.3.0
+Click the thumbstick of the right controller to open the radial menu.
+Release the thumbstick to close the menu. If you release while hovering
+on an object, it will be selected.
